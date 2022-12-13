@@ -1,16 +1,31 @@
-# This is a sample Python script.
+import os
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import discord
+from pronouncing import rhymes
+
+token = os.environ.get("TOKEN")
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+@client.event
+async def on_ready():
+    print(f'We have logged in as {client.user}')
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+@client.event
+async def on_message(message):
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    if message.author == client.user:
+        return
+
+    words = message.content.split()
+    for word in words:
+        if word in rhymes('her'):
+            await message.channel.send(f'{word}? I don\'t even know her')
+            return
+
+client.run(token)
